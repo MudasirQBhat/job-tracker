@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ui/ProtectedRoute';
 import Sidebar from './components/ui/Sidebar';
+import Home from './pages/home/Home';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import Dashboard from './pages/dashboard/Dashboard';
@@ -28,6 +29,7 @@ const App = () => {
 
   return (
     <Routes>
+      <Route path="/" element={<Home />} />
       <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
       <Route path="/signup" element={!user ? <Signup /> : <Navigate to="/dashboard" />} />
 
@@ -53,7 +55,7 @@ const App = () => {
         <ProtectedRoute><AppLayout><Settings /></AppLayout></ProtectedRoute>
       } />
 
-      <Route path="*" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
+      <Route path="*" element={<Navigate to={user ? "/dashboard" : "/"} />} />
     </Routes>
   );
 };
