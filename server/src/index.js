@@ -14,7 +14,10 @@ const { initDB } = require('./config/db');
 const app = express();
 
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: [
+    process.env.CLIENT_URL,
+    'https://job-tracker-three-beta.vercel.app'
+  ],
   credentials: true
 }));
 
