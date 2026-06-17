@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getJobs, deleteJob } from '../../api/jobs';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import ConfirmModal from '../../components/ui/ConfirmModal';
 
 const statusColors = {
   Applied: 'badge-applied',
@@ -15,6 +16,9 @@ const Applications = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('');
   const [sort, setSort] = useState('created_at');
+  const [confirmId, setConfirmId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   const fetchJobs = () => {
     setLoading(true);
@@ -26,14 +30,29 @@ const Applications = () => {
 
   useEffect(() => { fetchJobs(); }, [filter, sort]);
 
-  const handleDelete = async (id, e) => {
+  const askDelete = (id, e) => {
     e.preventDefault();
-    if (!confirm('Delete this application?')) return;
+    setDeleteError('');
+    setConfirmId(id);
+  };
+
+  const closeConfirm = () => {
+    if (deleting) return;
+    setConfirmId(null);
+    setDeleteError('');
+  };
+
+  const confirmDelete = async () => {
+    setDeleting(true);
+    setDeleteError('');
     try {
-      await deleteJob(id);
-      setJobs(jobs.filter((j) => j.id !== id));
-    } catch (err) {
-      alert('Failed to delete');
+      await deleteJob(confirmId);
+      setJobs((prev) => prev.filter((j) => j.id !== confirmId));
+      setConfirmId(null);
+    } catch {
+      setDeleteError('Failed to delete. Please try again.');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -105,7 +124,7 @@ const Applications = () => {
                       </div>
                     )}
                     <button className="btn btn-danger" style={{ padding: '6px 12px', fontSize: '13px' }}
-                      onClick={(e) => handleDelete(job.id, e)}>
+                      onClick={(e) => askDelete(job.id, e)}>
                       Delete
                     </button>
                   </div>
@@ -115,6 +134,18 @@ const Applications = () => {
           </div>
         )
       )}
+
+      <ConfirmModal
+        open={confirmId !== null}
+        title="Delete application?"
+        message="This will permanently remove this application and its AI analysis. This action cannot be undone."
+        confirmLabel="Delete"
+        danger
+        loading={deleting}
+        error={deleteError}
+        onConfirm={confirmDelete}
+        onCancel={closeConfirm}
+      />
     </div>
   );
 };
