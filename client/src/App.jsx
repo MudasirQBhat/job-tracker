@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import ProtectedRoute from './components/ui/ProtectedRoute';
+import PublicLayout from './components/ui/PublicLayout';
 import Sidebar from './components/ui/Sidebar';
 import Home from './pages/home/Home';
 import Login from './pages/auth/Login';
@@ -30,7 +31,7 @@ const AppLayout = ({ children }) => {
           >
             <span /><span /><span />
           </button>
-          <span className="logo">JobTracker</span>
+          <Link to="/" className="logo">JobTracker</Link>
           <span style={{ width: 24 }} />
         </header>
         <main className="main-content" key={location.pathname}>
@@ -46,9 +47,9 @@ const App = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
-      <Route path="/signup" element={!user ? <Signup /> : <Navigate to="/dashboard" />} />
+      <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
+      <Route path="/login" element={!user ? <PublicLayout><Login /></PublicLayout> : <Navigate to="/dashboard" />} />
+      <Route path="/signup" element={!user ? <PublicLayout><Signup /></PublicLayout> : <Navigate to="/dashboard" />} />
 
       <Route path="/dashboard" element={
         <ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>

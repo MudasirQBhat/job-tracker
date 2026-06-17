@@ -1,5 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import HeroIllustration from './HeroIllustration';
 
@@ -38,81 +37,21 @@ const features = [
 
 const steps = [
   { num: '1', title: 'Create your account', desc: 'Sign up in seconds and set up your candidate profile.' },
-  { num: '2', title: 'Add your applications', desc: 'Log every role you apply to with status and notes.' },
-  { num: '3', title: 'Let AI guide you', desc: 'Get match scores and insights to land your next role.' }
+  {
+    num: '2',
+    title: 'Add your free Gemini API key',
+    desc: 'AI features are powered by Google Gemini. Grab a free key from Google AI Studio and paste it under Settings — it’s encrypted before storage.',
+    link: { href: 'https://aistudio.google.com/app/apikey', label: 'Get your free key ↗' }
+  },
+  { num: '3', title: 'Add your applications', desc: 'Log every role you apply to with status, notes, and progress.' },
+  { num: '4', title: 'Let AI guide you', desc: 'Get match scores and insights to focus on the roles you’re most likely to land.' }
 ];
-
-const ProfileMenu = () => {
-  const { user, logoutUser } = useAuth();
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const handler = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  const handleLogout = () => {
-    logoutUser();
-    setOpen(false);
-    navigate('/');
-  };
-
-  return (
-    <div className="profile-menu" ref={ref}>
-      <button className="profile-chip" onClick={() => setOpen((o) => !o)}>
-        <span className="profile-avatar">{user?.name?.[0]?.toUpperCase()}</span>
-        <span className="profile-chip-name">{user?.name}</span>
-        <span className="profile-caret">▾</span>
-      </button>
-      {open && (
-        <div className="profile-dropdown">
-          <div className="profile-dropdown-head">
-            <span className="profile-avatar">{user?.name?.[0]?.toUpperCase()}</span>
-            <div>
-              <div className="profile-dropdown-name">{user?.name}</div>
-              <div className="profile-dropdown-email">{user?.email}</div>
-            </div>
-          </div>
-          <Link to="/dashboard" className="profile-dropdown-item" onClick={() => setOpen(false)}>Dashboard</Link>
-          <Link to="/profile" className="profile-dropdown-item" onClick={() => setOpen(false)}>My Profile</Link>
-          <Link to="/settings" className="profile-dropdown-item" onClick={() => setOpen(false)}>Settings</Link>
-          <button className="profile-dropdown-item danger" onClick={handleLogout}>Log out</button>
-        </div>
-      )}
-    </div>
-  );
-};
 
 const Home = () => {
   const { user } = useAuth();
 
   return (
-    <div className="landing">
-      {/* Header */}
-      <header className="landing-header">
-        <div className="landing-container landing-nav">
-          <Link to="/" className="brand">
-            <span className="brand-mark">JT</span>
-            <span className="brand-name">JobTracker</span>
-          </Link>
-          <nav className="landing-actions">
-            {user ? (
-              <ProfileMenu />
-            ) : (
-              <>
-                <Link to="/login" className="btn btn-secondary">Log in</Link>
-                <Link to="/signup" className="btn btn-primary">Sign up</Link>
-              </>
-            )}
-          </nav>
-        </div>
-      </header>
-
+    <>
       {/* Hero */}
       <section className="hero-section">
         <div className="landing-container hero-grid">
@@ -171,8 +110,8 @@ const Home = () => {
       <section className="section section-alt" id="how-it-works">
         <div className="landing-container">
           <div className="section-head">
-            <h2>Get started in three simple steps</h2>
-            <p>From sign-up to your first insight in just a few minutes.</p>
+            <h2>Get started in four simple steps</h2>
+            <p>From sign-up to your first AI insight in just a few minutes — including a free API key.</p>
           </div>
           <div className="steps-grid">
             {steps.map((s) => (
@@ -180,6 +119,11 @@ const Home = () => {
                 <div className="step-num">{s.num}</div>
                 <h3>{s.title}</h3>
                 <p>{s.desc}</p>
+                {s.link && (
+                  <a className="step-link" href={s.link.href} target="_blank" rel="noreferrer">
+                    {s.link.label}
+                  </a>
+                )}
               </div>
             ))}
           </div>
@@ -200,45 +144,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="landing-footer">
-        <div className="landing-container footer-inner">
-          <div className="footer-brand">
-            <Link to="/" className="brand">
-              <span className="brand-mark">JT</span>
-              <span className="brand-name">JobTracker</span>
-            </Link>
-            <p>The smarter way to manage your job search, powered by AI.</p>
-          </div>
-          <div className="footer-cols">
-            <div className="footer-col">
-              <h4>Explore</h4>
-              <a href="#features">Features</a>
-              <a href="#how-it-works">How it works</a>
-            </div>
-            <div className="footer-col">
-              <h4>Account</h4>
-              {user ? (
-                <>
-                  <Link to="/dashboard">Dashboard</Link>
-                  <Link to="/profile">My Profile</Link>
-                </>
-              ) : (
-                <>
-                  <Link to="/signup">Get started</Link>
-                  <Link to="/login">Log in</Link>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="landing-container footer-bottom">
-          <span>© {new Date().getFullYear()} JobTracker. All rights reserved.</span>
-          <span>Built for job seekers, by job seekers.</span>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 };
 

@@ -40,7 +40,7 @@ body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color
 .hamburger span { width: 18px; height: 2px; background: var(--text); border-radius: 2px; }
 
 .sidebar-header { margin-bottom: 32px; }
-.logo { font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 20px; }
+.logo { font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 20px; text-decoration: none; display: inline-block; }
 .user-info { display: flex; align-items: center; gap: 10px; }
 .avatar {
   width: 36px; height: 36px; border-radius: 50%;
@@ -122,8 +122,8 @@ body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color
 .score-low { border-color: var(--danger); color: var(--danger); }
 
 .auth-page {
-  min-height: 100vh; display: flex; align-items: center;
-  justify-content: center; background: var(--bg);
+  flex: 1; display: flex; align-items: center;
+  justify-content: center; background: var(--bg); padding: 56px 24px;
 }
 .auth-card { width: 100%; max-width: 420px; }
 .auth-card h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
@@ -182,6 +182,8 @@ body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color
 
 /* ===== Landing / Home page ===== */
 .landing { min-height: 100vh; background: var(--bg); }
+.public-layout { display: flex; flex-direction: column; min-height: 100vh; background: var(--bg); }
+.public-main { flex: 1; display: flex; flex-direction: column; }
 .landing-container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
 
 .btn-lg { padding: 14px 26px; font-size: 15px; }
@@ -314,8 +316,13 @@ body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color
 .feature-card p { font-size: 14px; line-height: 1.6; color: var(--text-secondary); }
 
 /* Steps */
-.steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
 .step-card { text-align: center; padding: 12px; }
+.step-link {
+  display: inline-block; margin-top: 12px; font-size: 13px; font-weight: 500;
+  color: var(--primary); text-decoration: none;
+}
+.step-link:hover { text-decoration: underline; }
 .step-num {
   width: 52px; height: 52px; border-radius: 50%; margin: 0 auto 18px;
   background: linear-gradient(135deg, var(--primary), #8b7dff);
@@ -353,6 +360,8 @@ body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color
 }
 
 @media (max-width: 900px) {
+  .steps-grid { grid-template-columns: repeat(2, 1fr); }
+  .feature-grid { grid-template-columns: repeat(2, 1fr); }
   .hero-grid { grid-template-columns: 1fr; gap: 36px; text-align: center; }
   .hero-copy { align-items: center; }
   .hero-subtitle { margin-left: auto; margin-right: auto; }

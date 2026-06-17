@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 
 const links = [
@@ -26,7 +26,7 @@ const Sidebar = ({ open = false, onClose = () => {} }) => {
       />
       <aside className={`sidebar ${open ? 'open' : ''}`}>
         <div className="sidebar-header">
-          <div className="logo">JobTracker</div>
+          <Link to="/" className="logo" onClick={onClose}>JobTracker</Link>
           <div className="user-info">
             <div className="avatar">{user?.name?.[0]?.toUpperCase()}</div>
             <span className="user-name">{user?.name}</span>
