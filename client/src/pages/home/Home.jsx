@@ -1,5 +1,7 @@
-import { Link } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
+import HeroIllustration from './HeroIllustration';
 
 const features = [
   {
@@ -40,6 +42,52 @@ const steps = [
   { num: '3', title: 'Let AI guide you', desc: 'Get match scores and insights to land your next role.' }
 ];
 
+const ProfileMenu = () => {
+  const { user, logoutUser } = useAuth();
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const handleLogout = () => {
+    logoutUser();
+    setOpen(false);
+    navigate('/');
+  };
+
+  return (
+    <div className="profile-menu" ref={ref}>
+      <button className="profile-chip" onClick={() => setOpen((o) => !o)}>
+        <span className="profile-avatar">{user?.name?.[0]?.toUpperCase()}</span>
+        <span className="profile-chip-name">{user?.name}</span>
+        <span className="profile-caret">▾</span>
+      </button>
+      {open && (
+        <div className="profile-dropdown">
+          <div className="profile-dropdown-head">
+            <span className="profile-avatar">{user?.name?.[0]?.toUpperCase()}</span>
+            <div>
+              <div className="profile-dropdown-name">{user?.name}</div>
+              <div className="profile-dropdown-email">{user?.email}</div>
+            </div>
+          </div>
+          <Link to="/dashboard" className="profile-dropdown-item" onClick={() => setOpen(false)}>Dashboard</Link>
+          <Link to="/profile" className="profile-dropdown-item" onClick={() => setOpen(false)}>My Profile</Link>
+          <Link to="/settings" className="profile-dropdown-item" onClick={() => setOpen(false)}>Settings</Link>
+          <button className="profile-dropdown-item danger" onClick={handleLogout}>Log out</button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Home = () => {
   const { user } = useAuth();
 
@@ -54,7 +102,7 @@ const Home = () => {
           </Link>
           <nav className="landing-actions">
             {user ? (
-              <Link to="/dashboard" className="btn btn-primary">Go to Dashboard</Link>
+              <ProfileMenu />
             ) : (
               <>
                 <Link to="/login" className="btn btn-secondary">Log in</Link>
@@ -67,36 +115,41 @@ const Home = () => {
 
       {/* Hero */}
       <section className="hero-section">
-        <div className="landing-container hero-inner">
-          <span className="hero-pill">✦ AI-powered job tracking</span>
-          <h1 className="hero-title">
-            Land your next role,<br />
-            <span className="hero-accent">organized and effortless.</span>
-          </h1>
-          <p className="hero-subtitle">
-            JobTracker helps you manage every job application in one place — track your pipeline,
-            score your fit with AI, and never lose sight of an opportunity again.
-          </p>
-          <div className="hero-cta">
-            {user ? (
-              <Link to="/dashboard" className="btn btn-primary btn-lg">Open your dashboard</Link>
-            ) : (
-              <>
-                <Link to="/signup" className="btn btn-primary btn-lg">Get started free</Link>
-                <Link to="/login" className="btn btn-secondary btn-lg">Log in</Link>
-              </>
-            )}
+        <div className="landing-container hero-grid">
+          <div className="hero-copy">
+            <span className="hero-pill">✦ AI-powered job tracking</span>
+            <h1 className="hero-title">
+              Land your next role,{' '}
+              <span className="hero-accent">organized and effortless.</span>
+            </h1>
+            <p className="hero-subtitle">
+              JobTracker helps you manage every job application in one place — track your pipeline,
+              score your fit with AI, and never lose sight of an opportunity again.
+            </p>
+            <div className="hero-cta">
+              {user ? (
+                <Link to="/dashboard" className="btn btn-primary btn-lg">Open your dashboard</Link>
+              ) : (
+                <>
+                  <Link to="/signup" className="btn btn-primary btn-lg">Get started free</Link>
+                  <Link to="/login" className="btn btn-secondary btn-lg">Log in</Link>
+                </>
+              )}
+            </div>
+            <div className="hero-stats">
+              <div><strong>100%</strong><span>Free to start</span></div>
+              <div><strong>AI</strong><span>Match scoring</span></div>
+              <div><strong>1</strong><span>Place for everything</span></div>
+            </div>
           </div>
-          <div className="hero-stats">
-            <div><strong>100%</strong><span>Free to start</span></div>
-            <div><strong>AI</strong><span>Match scoring</span></div>
-            <div><strong>1</strong><span>Place for everything</span></div>
+          <div className="hero-visual">
+            <HeroIllustration />
           </div>
         </div>
       </section>
 
       {/* Features */}
-      <section className="section">
+      <section className="section" id="features">
         <div className="landing-container">
           <div className="section-head">
             <h2>Everything you need to run your job search</h2>
@@ -115,7 +168,7 @@ const Home = () => {
       </section>
 
       {/* How it works */}
-      <section className="section section-alt">
+      <section className="section section-alt" id="how-it-works">
         <div className="landing-container">
           <div className="section-head">
             <h2>Get started in three simple steps</h2>
@@ -160,21 +213,23 @@ const Home = () => {
           </div>
           <div className="footer-cols">
             <div className="footer-col">
-              <h4>Product</h4>
-              <Link to="/signup">Get started</Link>
-              <Link to="/login">Log in</Link>
+              <h4>Explore</h4>
               <a href="#features">Features</a>
+              <a href="#how-it-works">How it works</a>
             </div>
             <div className="footer-col">
-              <h4>Company</h4>
-              <a href="#about">About</a>
-              <a href="#careers">Careers</a>
-              <a href="#contact">Contact</a>
-            </div>
-            <div className="footer-col">
-              <h4>Legal</h4>
-              <a href="#privacy">Privacy</a>
-              <a href="#terms">Terms</a>
+              <h4>Account</h4>
+              {user ? (
+                <>
+                  <Link to="/dashboard">Dashboard</Link>
+                  <Link to="/profile">My Profile</Link>
+                </>
+              ) : (
+                <>
+                  <Link to="/signup">Get started</Link>
+                  <Link to="/login">Log in</Link>
+                </>
+              )}
             </div>
           </div>
         </div>
