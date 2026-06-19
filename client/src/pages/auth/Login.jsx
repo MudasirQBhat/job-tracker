@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../../api/auth';
 import useAuth from '../../hooks/useAuth';
+import PasswordInput from '../../components/ui/PasswordInput';
 
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -40,7 +41,7 @@ const Login = () => {
           </div>
           <div className="form-group">
             <label>Password</label>
-            <input name="password" type="password" placeholder="••••••••"
+            <PasswordInput name="password" placeholder="••••••••"
               value={form.password} onChange={handleChange} required />
           </div>
           {error && <p className="error-msg">{error}</p>}

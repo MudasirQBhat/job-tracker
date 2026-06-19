@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signup } from '../../api/auth';
 import useAuth from '../../hooks/useAuth';
+import PasswordInput from '../../components/ui/PasswordInput';
 
 const Signup = () => {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
@@ -46,7 +47,7 @@ const Signup = () => {
           </div>
           <div className="form-group">
             <label>Password</label>
-            <input name="password" type="password" placeholder="Min 6 characters"
+            <PasswordInput name="password" placeholder="Min 6 characters"
               value={form.password} onChange={handleChange} required />
           </div>
           {error && <p className="error-msg">{error}</p>}
