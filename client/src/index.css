@@ -141,8 +141,8 @@ h1, h2, h3, h4, h5, .logo, .logo-word, .hero-title, .section-head h2,
 .auth-card h1 { font-size: 26px; font-weight: 400; margin-bottom: 8px; }
 .auth-card p { color: var(--text-secondary); margin-bottom: 28px; font-size: 14px; }
 
-.error-msg { color: var(--danger); font-size: 13px; margin-top: 8px; }
-.success-msg { color: var(--success); font-size: 13px; margin-top: 8px; }
+.error-msg { color: var(--danger) !important; font-size: 13px; font-weight: 500; margin-top: 8px; }
+.success-msg { color: var(--success); font-size: 13px; font-weight: 500; margin-top: 8px; }
 
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -390,6 +390,10 @@ h1, h2, h3, h4, h5, .logo, .logo-word, .hero-title, .section-head h2,
   margin-top: 44px; padding-top: 24px; border-top: 1px solid var(--border);
   font-size: 13px; color: var(--text-secondary);
 }
+.footer-credit { display: inline-flex; align-items: center; gap: 4px; }
+.footer-credit a { color: var(--primary); text-decoration: none; font-weight: 500; }
+.footer-credit a:hover { text-decoration: underline; }
+.footer-heart { color: var(--danger); font-style: normal; }
 
 @media (max-width: 900px) {
   .steps-grid { grid-template-columns: repeat(2, 1fr); }

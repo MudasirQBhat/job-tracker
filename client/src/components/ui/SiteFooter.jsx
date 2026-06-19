@@ -38,7 +38,10 @@ const SiteFooter = () => {
       </div>
       <div className="landing-container footer-bottom">
         <span>© {new Date().getFullYear()} ApplyWise. All rights reserved.</span>
-        <span>Built for job seekers, by job seekers.</span>
+        <span className="footer-credit">
+          Developed with <span className="footer-heart" aria-hidden="true">❤</span> by{' '}
+          <a href="https://mudasirqadir.netlify.app" target="_blank" rel="noreferrer">Mudasir Qadir</a>
+        </span>
       </div>
     </footer>
   );
