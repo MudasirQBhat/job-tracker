@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
+import Logo from './Logo';
 
 const ProfileMenu = () => {
   const { user, logoutUser } = useAuth();
@@ -55,8 +56,7 @@ const SiteHeader = () => {
     <header className="landing-header">
       <div className="landing-container landing-nav">
         <Link to="/" className="brand">
-          <span className="brand-mark">JT</span>
-          <span className="brand-name">JobTracker</span>
+          <Logo />
         </Link>
         <nav className="landing-actions">
           {user ? (

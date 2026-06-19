@@ -62,7 +62,7 @@ const Home = () => {
               <span className="hero-accent">organized and effortless.</span>
             </h1>
             <p className="hero-subtitle">
-              JobTracker helps you manage every job application in one place — track your pipeline,
+              ApplyWise helps you manage every job application in one place — track your pipeline,
               score your fit with AI, and never lose sight of an opportunity again.
             </p>
             <div className="hero-cta">
@@ -135,7 +135,7 @@ const Home = () => {
         <div className="landing-container">
           <div className="cta-banner">
             <h2>Ready to take control of your job search?</h2>
-            <p>Join JobTracker today and turn the chaos of applications into a clear, winning plan.</p>
+            <p>Join ApplyWise today and turn the chaos of applications into a clear, winning plan.</p>
             {user ? (
               <Link to="/dashboard" className="btn btn-primary btn-lg">Go to Dashboard</Link>
             ) : (

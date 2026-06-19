@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
+import Logo from './Logo';
 
 const SiteFooter = () => {
   const { user } = useAuth();
@@ -9,8 +10,7 @@ const SiteFooter = () => {
       <div className="landing-container footer-inner">
         <div className="footer-brand">
           <Link to="/" className="brand">
-            <span className="brand-mark">JT</span>
-            <span className="brand-name">JobTracker</span>
+            <Logo />
           </Link>
           <p>The smarter way to manage your job search, powered by AI.</p>
         </div>
@@ -37,7 +37,7 @@ const SiteFooter = () => {
         </div>
       </div>
       <div className="landing-container footer-bottom">
-        <span>© {new Date().getFullYear()} JobTracker. All rights reserved.</span>
+        <span>© {new Date().getFullYear()} ApplyWise. All rights reserved.</span>
         <span>Built for job seekers, by job seekers.</span>
       </div>
     </footer>

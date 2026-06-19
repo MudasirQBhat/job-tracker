@@ -6,7 +6,7 @@ const HeroIllustration = () => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     role="img"
-    aria-label="JobTracker dashboard preview"
+    aria-label="ApplyWise dashboard preview"
   >
     <defs>
       <linearGradient id="cardGrad" x1="0" y1="0" x2="1" y2="1">

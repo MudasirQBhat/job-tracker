@@ -31,7 +31,7 @@ const Login = () => {
     <div className="auth-page">
       <div className="auth-card card">
         <h1>Welcome back</h1>
-        <p>Sign in to your JobTracker account</p>
+        <p>Sign in to your ApplyWise account</p>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Email</label>

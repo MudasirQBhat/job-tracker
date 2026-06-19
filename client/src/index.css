@@ -25,7 +25,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4, h5, .logo, .brand-name, .hero-title, .section-head h2,
+h1, h2, h3, h4, h5, .logo, .logo-word, .hero-title, .section-head h2,
 .cta-banner h2, .modal-title, .btn, .stat-value {
   font-family: 'Google Sans', 'Roboto', system-ui, sans-serif;
 }
@@ -225,13 +225,17 @@ h1, h2, h3, h4, h5, .logo, .brand-name, .hero-title, .section-head h2,
 }
 .landing-nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.brand-mark {
-  width: 34px; height: 34px; border-radius: 9px;
-  background: linear-gradient(135deg, #1a73e8, #4285f4);
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 14px; color: #fff; letter-spacing: 0.5px;
+
+/* Brand logo lockup */
+.logo-lockup { display: inline-flex; align-items: center; gap: 10px; line-height: 1; }
+.logo-mark { display: inline-flex; flex-shrink: 0; }
+.logo-mark svg { display: block; }
+.logo-word {
+  font-family: 'Google Sans', 'Roboto', sans-serif;
+  font-weight: 700; font-size: 20px; letter-spacing: -0.5px;
 }
-.brand-name { font-size: 19px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+.logo-word-1 { color: var(--text); }
+.logo-word-2 { color: var(--primary); }
 .landing-actions { display: flex; align-items: center; gap: 10px; }
 
 /* Hero */

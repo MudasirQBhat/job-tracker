@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import ProtectedRoute from './components/ui/ProtectedRoute';
 import PublicLayout from './components/ui/PublicLayout';
 import Sidebar from './components/ui/Sidebar';
+import Logo from './components/ui/Logo';
 import Home from './pages/home/Home';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
@@ -31,7 +32,7 @@ const AppLayout = ({ children }) => {
           >
             <span /><span /><span />
           </button>
-          <Link to="/" className="logo">JobTracker</Link>
+          <Link to="/" className="logo"><Logo size={30} /></Link>
           <span style={{ width: 24 }} />
         </header>
         <main className="main-content" key={location.pathname}>
