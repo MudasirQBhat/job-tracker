@@ -42,7 +42,7 @@ const Dashboard = () => {
       </div>
 
       {!hasGeminiKey && (
-        <div className="card" style={{ marginBottom: '24px', borderColor: 'var(--warning)', background: '#1c1700' }}>
+        <div className="card" style={{ marginBottom: '24px', borderColor: 'var(--warning)', background: '#fef7e0' }}>
           <p style={{ color: 'var(--warning)', fontSize: '14px' }}>
             ⚠️ You haven't added your Gemini API key yet. AI match predictions won't work until you do.{' '}
             <Link to="/settings" style={{ color: 'var(--primary)' }}>Add it in Settings →</Link>
