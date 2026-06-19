@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { saveGeminiKey, deleteGeminiKey } from '../../api/auth';
 import useAuth from '../../hooks/useAuth';
+import ConfirmModal from '../../components/ui/ConfirmModal';
 
 const Settings = () => {
   const { hasGeminiKey, setHasGeminiKey } = useAuth();
   const [apiKey, setApiKey] = useState('');
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
 
@@ -30,14 +32,15 @@ const Settings = () => {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Remove your Gemini API key? AI analysis will stop working.')) return;
     setDeleting(true);
+    setError('');
     try {
       await deleteGeminiKey();
       setHasGeminiKey(false);
+      setConfirmOpen(false);
       setSuccess('API key removed.');
       setTimeout(() => setSuccess(''), 3000);
-    } catch (err) {
+    } catch {
       setError('Failed to remove key');
     } finally {
       setDeleting(false);
@@ -88,7 +91,7 @@ const Settings = () => {
                 <button className="btn btn-primary" type="submit" disabled={saving}>
                   {saving ? 'Saving...' : 'Update key'}
                 </button>
-                <button type="button" className="btn btn-danger" onClick={handleDelete} disabled={deleting}>
+                <button type="button" className="btn btn-danger" onClick={() => setConfirmOpen(true)} disabled={deleting}>
                   {deleting ? 'Removing...' : 'Remove key'}
                 </button>
               </div>
@@ -109,6 +112,18 @@ const Settings = () => {
           </form>
         )}
       </div>
+
+      <ConfirmModal
+        open={confirmOpen}
+        title="Remove API key?"
+        message="Your Gemini API key will be deleted and AI match analysis will stop working until you add a new one."
+        confirmLabel="Remove key"
+        danger
+        loading={deleting}
+        error={error}
+        onConfirm={handleDelete}
+        onCancel={() => { if (!deleting) { setConfirmOpen(false); setError(''); } }}
+      />
     </div>
   );
 };
