@@ -67,6 +67,17 @@ const Dashboard = () => {
   const recent = data?.recent || [];
   const followUps = allJobs.filter(needsFollowUp);
 
+  const total = allJobs.length;
+  const pct = (n) => (total ? Math.round((n / total) * 100) : 0);
+  const responded = allJobs.filter((j) => j.status !== 'Applied').length;
+  const interviews = allJobs.filter((j) => j.status === 'Interviewing' || j.status === 'Offer').length;
+  const offers = allJobs.filter((j) => j.status === 'Offer').length;
+  const weekly = Array.from({ length: 6 }, (_, i) => {
+    const wk = 5 - i;
+    return allJobs.filter((j) => Math.floor(daysSince(j.applied_date) / 7) === wk).length;
+  });
+  const maxWeekly = Math.max(1, ...weekly);
+
   return (
     <div>
       <div className="page-header">
@@ -205,6 +216,43 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+
+      {total > 0 && (
+        <div className="card" style={{ marginTop: '20px' }}>
+          <h2 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '18px' }}>Insights</h2>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '24px' }}>
+            <div className="insight-metric">
+              <div className="insight-value">{pct(responded)}%</div>
+              <div className="insight-label">Response rate</div>
+            </div>
+            <div className="insight-metric">
+              <div className="insight-value">{pct(interviews)}%</div>
+              <div className="insight-label">Interview rate</div>
+            </div>
+            <div className="insight-metric">
+              <div className="insight-value">{pct(offers)}%</div>
+              <div className="insight-label">Offer rate</div>
+            </div>
+          </div>
+          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px' }}>
+            Applications · last 6 weeks
+          </p>
+          <div className="bar-chart">
+            {weekly.map((c, i) => {
+              const wk = 5 - i;
+              return (
+                <div className="bar-col" key={i}>
+                  <div className="bar-track">
+                    <div className="bar" style={{ height: `${(c / maxWeekly) * 100}%` }} />
+                  </div>
+                  <span className="bar-count">{c}</span>
+                  <span className="bar-label">{wk === 0 ? 'now' : `${wk}w`}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
