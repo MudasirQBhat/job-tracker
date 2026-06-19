@@ -1,4 +1,4 @@
-const { analyzeJobMatch } = require('../services/aiService');
+const { analyzeJobMatch, generateCoverLetter } = require('../services/aiService');
 
 const analyze = async (req, res) => {
   const { jobId } = req.params;
@@ -10,4 +10,14 @@ const analyze = async (req, res) => {
   }
 };
 
-module.exports = { analyze };
+const coverLetter = async (req, res) => {
+  const { jobId } = req.params;
+  try {
+    const result = await generateCoverLetter(req.user.id, jobId);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = { analyze, coverLetter };

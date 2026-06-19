@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getJob, updateJob } from '../../api/jobs';
-import { analyzeJob } from '../../api/ai';
+import { analyzeJob, generateCoverLetter } from '../../api/ai';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import useToast from '../../hooks/useToast';
 
@@ -18,6 +18,8 @@ const JobDetail = () => {
   const [analyzing, setAnalyzing] = useState(false);
   const [aiError, setAiError] = useState('');
   const [editStatus, setEditStatus] = useState('');
+  const [coverLetter, setCoverLetter] = useState('');
+  const [generatingCL, setGeneratingCL] = useState(false);
   const toast = useToast();
 
   useEffect(() => {
@@ -37,6 +39,24 @@ const JobDetail = () => {
     } catch {
       toast('Failed to update status', 'error');
     }
+  };
+
+  const handleCoverLetter = async () => {
+    setGeneratingCL(true);
+    try {
+      const res = await generateCoverLetter(id);
+      setCoverLetter(res.data.cover_letter);
+    } catch (err) {
+      toast(err.response?.data?.error || 'Failed to generate cover letter', 'error');
+    } finally {
+      setGeneratingCL(false);
+    }
+  };
+
+  const copyCoverLetter = () => {
+    navigator.clipboard.writeText(coverLetter)
+      .then(() => toast('Cover letter copied'))
+      .catch(() => toast('Could not copy', 'error'));
   };
 
   const handleAnalyze = async () => {
@@ -176,6 +196,38 @@ const JobDetail = () => {
                 <p style={{ marginBottom: '8px' }}>No analysis yet</p>
                 <p style={{ fontSize: '13px' }}>Click "Analyze match" to get your AI-powered hiring prediction</p>
               </div>
+            )}
+          </div>
+
+          <div className="card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h2 style={{ fontSize: '16px', fontWeight: '600' }}>Cover letter</h2>
+              <button className="btn btn-primary" onClick={handleCoverLetter} disabled={generatingCL}
+                style={{ padding: '8px 14px', fontSize: '13px' }}>
+                {generatingCL ? 'Generating...' : coverLetter ? 'Regenerate' : 'Generate'}
+              </button>
+            </div>
+
+            {generatingCL && <LoadingSpinner text="Writing a tailored cover letter..." />}
+
+            {!generatingCL && coverLetter && (
+              <>
+                <div style={{ whiteSpace: 'pre-wrap', fontSize: '14px', lineHeight: '1.7',
+                  color: 'var(--text)', background: 'var(--bg3)', padding: '16px',
+                  borderRadius: 'var(--radius)', border: '1px solid var(--border)' }}>
+                  {coverLetter}
+                </div>
+                <button className="btn btn-secondary" style={{ marginTop: '12px', fontSize: '13px' }}
+                  onClick={copyCoverLetter}>
+                  Copy to clipboard
+                </button>
+              </>
+            )}
+
+            {!generatingCL && !coverLetter && (
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
+                Generate a tailored cover letter for this role using your profile and the job description.
+              </p>
             )}
           </div>
 

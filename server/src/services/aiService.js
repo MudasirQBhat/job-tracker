@@ -157,6 +157,104 @@ const callGemini = async (apiKey, prompt) => {
   throw lastError;
 };
 
+const buildCoverLetterPrompt = (profile, resumeText, job) => {
+  return `You are an expert career coach. Write a tailored, professional cover letter for this candidate applying to this specific role.
+
+=== CANDIDATE ===
+Name: ${profile.name || 'the candidate'}
+Title: ${profile.title || 'Not provided'}
+Skills: ${(profile.skills || []).join(', ') || 'Not provided'}
+Bio: ${profile.bio || 'Not provided'}
+
+Experience:
+${(profile.experience || []).map(e => `- ${e.role} at ${e.company} (${e.duration}): ${e.description}`).join('\n') || 'Not provided'}
+
+Resume Text:
+${limitText(resumeText, 3000) || 'No resume uploaded'}
+
+=== JOB ===
+Company: ${job.company}
+Role: ${job.role}
+Job Description:
+${limitText(job.job_description, 5000)}
+
+=== INSTRUCTIONS ===
+- 250-350 words, 3-4 short paragraphs.
+- Professional but warm and genuine; avoid clichés and generic filler.
+- Reference specific requirements from the job description and connect them to the candidate's real experience and skills.
+- Use the candidate's actual name (${profile.name || 'the candidate'}) in the sign-off. Do NOT use placeholders like [Your Name], [Company], or [Date].
+- Address it to "Dear Hiring Manager,".
+- Return ONLY the cover letter text — no preamble, no markdown, no notes.`;
+};
+
+const callGeminiText = async (apiKey, prompt) => {
+  let lastError;
+
+  for (const model of GEMINI_MODELS) {
+    try {
+      const response = await axios.post(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+        {
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.6, maxOutputTokens: 2048 }
+        },
+        {
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+          timeout: 30000
+        }
+      );
+      const rawText = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
+      return { model, text: rawText };
+    } catch (err) {
+      lastError = err;
+      console.error(`Gemini model ${model} failed:`, err.response?.data?.error?.message || err.message);
+    }
+  }
+
+  throw lastError;
+};
+
+const generateCoverLetter = async (userId, jobId) => {
+  try {
+    const userResult = await pool.query(
+      'SELECT name, gemini_api_key FROM users WHERE id = $1',
+      [userId]
+    );
+    const user = userResult.rows[0];
+    if (!user?.gemini_api_key)
+      throw new Error('No Gemini API key found. Please add your key in Settings.');
+
+    const apiKey = decrypt(user.gemini_api_key);
+
+    const profileResult = await pool.query('SELECT * FROM profiles WHERE user_id = $1', [userId]);
+    const profile = { ...profileResult.rows[0], name: user.name };
+
+    const jobResult = await pool.query(
+      'SELECT * FROM job_applications WHERE id = $1 AND user_id = $2',
+      [jobId, userId]
+    );
+    if (jobResult.rows.length === 0) throw new Error('Job not found');
+    const job = jobResult.rows[0];
+
+    if (!job.job_description)
+      throw new Error('No job description found for this application.');
+
+    const prompt = buildCoverLetterPrompt(profile, profile.resume_text, job);
+    const { text } = await callGeminiText(apiKey, prompt);
+    if (!text) throw new Error('Gemini returned an empty response. Please try again.');
+
+    return { cover_letter: text.trim() };
+  } catch (err) {
+    const apiMessage = err.response?.data?.error?.message;
+    console.error('Cover letter error:', apiMessage || err.message);
+
+    if (err.code === 'ECONNABORTED')
+      throw new Error('Gemini timed out. Please try again with a shorter job description.');
+
+    throw new Error(apiMessage || err.message);
+  }
+};
+
 const analyzeJobMatch = async (userId, jobId) => {
   try {
     // console.log(`Starting AI analysis for job ${jobId}`);
@@ -217,4 +315,4 @@ const analyzeJobMatch = async (userId, jobId) => {
   }
 };
 
-module.exports = { analyzeJobMatch };
+module.exports = { analyzeJobMatch, generateCoverLetter };
