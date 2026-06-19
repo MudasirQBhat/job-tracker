@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getDashboardStats } from '../../api/jobs';
 import useAuth from '../../hooks/useAuth';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import Skeleton from '../../components/ui/Skeleton';
 
 const statusColors = {
   Applied: 'badge-applied',
@@ -29,7 +29,34 @@ const Dashboard = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <LoadingSpinner text="Loading dashboard..." />;
+  if (loading) return (
+    <div>
+      <div className="page-header">
+        <Skeleton width="260px" height={26} />
+        <Skeleton width="180px" height={14} style={{ marginTop: 8 }} />
+      </div>
+      <div className="grid-4" style={{ marginBottom: '28px' }}>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="stat-card">
+            <Skeleton width="50%" height={32} />
+            <Skeleton width="70%" height={12} style={{ marginTop: 12 }} />
+          </div>
+        ))}
+      </div>
+      <div className="grid-2">
+        <div className="card">
+          <Skeleton width="40%" height={16} />
+          <Skeleton height={52} style={{ marginTop: 18 }} />
+          <Skeleton height={52} style={{ marginTop: 10 }} />
+        </div>
+        <div className="card">
+          <Skeleton width="40%" height={16} />
+          <Skeleton height={40} style={{ marginTop: 18 }} />
+          <Skeleton height={40} style={{ marginTop: 10 }} />
+        </div>
+      </div>
+    </div>
+  );
 
   const stats = data?.stats || {};
   const recent = data?.recent || [];

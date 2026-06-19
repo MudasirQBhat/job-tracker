@@ -1,31 +1,30 @@
 import { useState } from 'react';
 import { saveGeminiKey, deleteGeminiKey } from '../../api/auth';
 import useAuth from '../../hooks/useAuth';
+import useToast from '../../hooks/useToast';
 import ConfirmModal from '../../components/ui/ConfirmModal';
+import PasswordInput from '../../components/ui/PasswordInput';
 
 const Settings = () => {
   const { hasGeminiKey, setHasGeminiKey } = useAuth();
+  const toast = useToast();
   const [apiKey, setApiKey] = useState('');
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [success, setSuccess] = useState('');
-  const [error, setError] = useState('');
+  const [deleteError, setDeleteError] = useState('');
 
   const handleSave = async (e) => {
     e.preventDefault();
-    if (!apiKey.trim()) return setError('Please enter your API key');
+    if (!apiKey.trim()) return toast('Please enter your API key', 'error');
     setSaving(true);
-    setError('');
-    setSuccess('');
     try {
       await saveGeminiKey(apiKey.trim());
       setHasGeminiKey(true);
-      setSuccess('API key saved and encrypted successfully!');
       setApiKey('');
-      setTimeout(() => setSuccess(''), 4000);
-    } catch (err) {
-      setError('Failed to save API key');
+      toast('API key saved and encrypted successfully');
+    } catch {
+      toast('Failed to save API key', 'error');
     } finally {
       setSaving(false);
     }
@@ -33,15 +32,14 @@ const Settings = () => {
 
   const handleDelete = async () => {
     setDeleting(true);
-    setError('');
+    setDeleteError('');
     try {
       await deleteGeminiKey();
       setHasGeminiKey(false);
       setConfirmOpen(false);
-      setSuccess('API key removed.');
-      setTimeout(() => setSuccess(''), 3000);
+      toast('API key removed');
     } catch {
-      setError('Failed to remove key');
+      setDeleteError('Failed to remove key');
     } finally {
       setDeleting(false);
     }
@@ -82,11 +80,9 @@ const Settings = () => {
             <form onSubmit={handleSave} style={{ marginBottom: '12px' }}>
               <div className="form-group">
                 <label>Replace with a new key</label>
-                <input type="password" placeholder="AIza..."
+                <PasswordInput placeholder="AIza..."
                   value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
               </div>
-              {error && <p className="error-msg">{error}</p>}
-              {success && <p className="success-msg">{success}</p>}
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button className="btn btn-primary" type="submit" disabled={saving}>
                   {saving ? 'Saving...' : 'Update key'}
@@ -101,11 +97,9 @@ const Settings = () => {
           <form onSubmit={handleSave}>
             <div className="form-group">
               <label>Paste your Gemini API key</label>
-              <input type="password" placeholder="AIza..."
+              <PasswordInput placeholder="AIza..."
                 value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
             </div>
-            {error && <p className="error-msg">{error}</p>}
-            {success && <p className="success-msg">{success}</p>}
             <button className="btn btn-primary" type="submit" disabled={saving}>
               {saving ? 'Saving...' : 'Save API key'}
             </button>
@@ -120,9 +114,9 @@ const Settings = () => {
         confirmLabel="Remove key"
         danger
         loading={deleting}
-        error={error}
+        error={deleteError}
         onConfirm={handleDelete}
-        onCancel={() => { if (!deleting) { setConfirmOpen(false); setError(''); } }}
+        onCancel={() => { if (!deleting) { setConfirmOpen(false); setDeleteError(''); } }}
       />
     </div>
   );

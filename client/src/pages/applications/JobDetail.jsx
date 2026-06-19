@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getJob, updateJob } from '../../api/jobs';
 import { analyzeJob } from '../../api/ai';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import useToast from '../../hooks/useToast';
 
 const statusColors = {
   Applied: 'badge-applied', Interviewing: 'badge-interviewing',
@@ -17,6 +18,7 @@ const JobDetail = () => {
   const [analyzing, setAnalyzing] = useState(false);
   const [aiError, setAiError] = useState('');
   const [editStatus, setEditStatus] = useState('');
+  const toast = useToast();
 
   useEffect(() => {
     getJob(id)
@@ -31,8 +33,9 @@ const JobDetail = () => {
     try {
       const res = await updateJob(id, { ...job, status: newStatus });
       setJob(res.data);
-    } catch (err) {
-      console.error('Failed to update status');
+      toast(`Status updated to ${newStatus}`);
+    } catch {
+      toast('Failed to update status', 'error');
     }
   };
 

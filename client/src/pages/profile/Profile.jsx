@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getProfile, updateProfile } from '../../api/profile';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import useToast from '../../hooks/useToast';
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
@@ -12,8 +13,7 @@ const Profile = () => {
   const [skillInput, setSkillInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [success, setSuccess] = useState('');
-  const [error, setError] = useState('');
+  const toast = useToast();
 
   useEffect(() => {
     getProfile().then((res) => {
@@ -78,14 +78,11 @@ const Profile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    setError('');
-    setSuccess('');
     try {
       await updateProfile(form);
-      setSuccess('Profile updated successfully!');
-      setTimeout(() => setSuccess(''), 3000);
-    } catch (err) {
-      setError('Failed to update profile');
+      toast('Profile updated successfully');
+    } catch {
+      toast('Failed to update profile', 'error');
     } finally {
       setSaving(false);
     }
@@ -230,9 +227,6 @@ const Profile = () => {
             </div>
           ))}
         </div>
-
-        {error && <p className="error-msg" style={{ marginBottom: '12px' }}>{error}</p>}
-        {success && <p className="success-msg" style={{ marginBottom: '12px' }}>{success}</p>}
 
         <button className="btn btn-primary" type="submit" disabled={saving}>
           {saving ? 'Saving...' : 'Save profile'}

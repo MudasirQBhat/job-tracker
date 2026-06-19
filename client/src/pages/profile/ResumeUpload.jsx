@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getProfile, uploadResume } from '../../api/profile';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import useToast from '../../hooks/useToast';
 
 const ResumeUpload = () => {
   const [profile, setProfile] = useState(null);
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [success, setSuccess] = useState('');
-  const [error, setError] = useState('');
+  const toast = useToast();
 
   useEffect(() => {
     getProfile().then((res) => setProfile(res.data))
@@ -18,23 +18,21 @@ const ResumeUpload = () => {
 
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!file) return setError('Please select a PDF file');
-    if (file.type !== 'application/pdf') return setError('Only PDF files are allowed');
-    if (file.size > 5 * 1024 * 1024) return setError('File must be under 5MB');
+    if (!file) return toast('Please select a PDF file', 'error');
+    if (file.type !== 'application/pdf') return toast('Only PDF files are allowed', 'error');
+    if (file.size > 5 * 1024 * 1024) return toast('File must be under 5MB', 'error');
 
     setUploading(true);
-    setError('');
-    setSuccess('');
     const formData = new FormData();
     formData.append('resume', file);
 
     try {
       const res = await uploadResume(formData);
       setProfile((prev) => ({ ...prev, resume_url: res.data.resume_url }));
-      setSuccess('Resume uploaded! Text extracted and ready for AI analysis.');
+      toast('Resume uploaded — text extracted and ready for AI analysis');
       setFile(null);
     } catch (err) {
-      setError(err.response?.data?.error || 'Upload failed');
+      toast(err.response?.data?.error || 'Upload failed', 'error');
     } finally {
       setUploading(false);
     }
@@ -84,8 +82,6 @@ const ResumeUpload = () => {
               Selected: {file.name} ({(file.size / 1024).toFixed(0)} KB)
             </p>
           )}
-          {error && <p className="error-msg">{error}</p>}
-          {success && <p className="success-msg">{success}</p>}
           <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
             <button className="btn btn-primary" type="submit" disabled={uploading || !file}>
               {uploading ? 'Uploading...' : 'Upload'}

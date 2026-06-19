@@ -4,6 +4,7 @@ import ProtectedRoute from './components/ui/ProtectedRoute';
 import PublicLayout from './components/ui/PublicLayout';
 import Sidebar from './components/ui/Sidebar';
 import Logo from './components/ui/Logo';
+import ServerWakeBanner from './components/ui/ServerWakeBanner';
 import Home from './pages/home/Home';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
@@ -47,7 +48,9 @@ const App = () => {
   const { user } = useAuth();
 
   return (
-    <Routes>
+    <>
+      <ServerWakeBanner />
+      <Routes>
       <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
       <Route path="/login" element={!user ? <PublicLayout><Login /></PublicLayout> : <Navigate to="/dashboard" />} />
       <Route path="/signup" element={!user ? <PublicLayout><Signup /></PublicLayout> : <Navigate to="/dashboard" />} />
@@ -75,7 +78,8 @@ const App = () => {
       } />
 
       <Route path="*" element={<Navigate to={user ? "/dashboard" : "/"} />} />
-    </Routes>
+      </Routes>
+    </>
   );
 };
 
