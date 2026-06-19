@@ -4,6 +4,7 @@ import { getJobs, deleteJob, updateJob } from '../../api/jobs';
 import ConfirmModal from '../../components/ui/ConfirmModal';
 import Skeleton from '../../components/ui/Skeleton';
 import useToast from '../../hooks/useToast';
+import { needsFollowUp } from '../../utils/followup';
 
 const STATUSES = ['Applied', 'Interviewing', 'Offer', 'Rejected'];
 
@@ -173,11 +174,14 @@ const Applications = () => {
                   >
                     <div className="kanban-card-role">{job.role}</div>
                     <div className="kanban-card-company">{job.company}</div>
-                    {job.ai_match_score != null && (
-                      <div style={{ marginTop: 8, fontSize: 12, fontWeight: 600, color: scoreColor(job.ai_match_score) }}>
-                        {job.ai_match_score}% match
-                      </div>
-                    )}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+                      {job.ai_match_score != null && (
+                        <span style={{ fontSize: 12, fontWeight: 600, color: scoreColor(job.ai_match_score) }}>
+                          {job.ai_match_score}% match
+                        </span>
+                      )}
+                      {needsFollowUp(job) && <span className="badge badge-followup">⏰ Follow up</span>}
+                    </div>
                   </div>
                 ))}
                 {cards.length === 0 && <div className="kanban-empty">Drop here</div>}
@@ -208,6 +212,7 @@ const Applications = () => {
                     <span className={`badge ${statusColors[job.status] || 'badge-applied'}`}>
                       {job.status}
                     </span>
+                    {needsFollowUp(job) && <span className="badge badge-followup">⏰ Follow up</span>}
                   </div>
                   <p style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>
                     {job.company} · Applied {new Date(job.applied_date).toLocaleDateString()}

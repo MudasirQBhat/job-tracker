@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getDashboardStats } from '../../api/jobs';
+import { getDashboardStats, getJobs } from '../../api/jobs';
 import useAuth from '../../hooks/useAuth';
 import Skeleton from '../../components/ui/Skeleton';
+import { needsFollowUp, daysSince } from '../../utils/followup';
 
 const statusColors = {
   Applied: 'badge-applied',
@@ -20,11 +21,15 @@ const ScoreColor = (score) => {
 const Dashboard = () => {
   const { user, hasGeminiKey } = useAuth();
   const [data, setData] = useState(null);
+  const [allJobs, setAllJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getDashboardStats()
-      .then((res) => setData(res.data))
+    Promise.all([getDashboardStats(), getJobs()])
+      .then(([statsRes, jobsRes]) => {
+        setData(statsRes.data);
+        setAllJobs(jobsRes.data || []);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -60,6 +65,7 @@ const Dashboard = () => {
 
   const stats = data?.stats || {};
   const recent = data?.recent || [];
+  const followUps = allJobs.filter(needsFollowUp);
 
   return (
     <div>
@@ -95,6 +101,38 @@ const Dashboard = () => {
           <div className="stat-label">Offers</div>
         </div>
       </div>
+
+      {followUps.length > 0 && (
+        <div className="card" style={{ marginBottom: '28px', borderColor: 'var(--warning)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+            <h2 style={{ fontSize: '16px', fontWeight: '600' }}>
+              ⏰ Needs follow-up <span style={{ color: 'var(--warning)' }}>({followUps.length})</span>
+            </h2>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {followUps.slice(0, 5).map((job) => (
+              <Link key={job.id} to={`/applications/${job.id}`}
+                style={{ textDecoration: 'none', color: 'inherit', display: 'flex',
+                  justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px',
+                  background: 'var(--bg3)', borderRadius: 'var(--radius)' }}>
+                <span style={{ fontSize: '14px' }}>
+                  <strong style={{ fontWeight: 500 }}>{job.role}</strong>
+                  <span style={{ color: 'var(--text-secondary)' }}> · {job.company}</span>
+                </span>
+                <span style={{ fontSize: '12px', color: 'var(--warning)', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                  {job.status} · {daysSince(job.applied_date)}d ago
+                </span>
+              </Link>
+            ))}
+          </div>
+          {followUps.length > 5 && (
+            <Link to="/applications" style={{ display: 'inline-block', marginTop: '12px',
+              fontSize: '13px', color: 'var(--primary)', textDecoration: 'none' }}>
+              View all in Applications →
+            </Link>
+          )}
+        </div>
+      )}
 
       <div className="grid-2">
         <div className="card">
