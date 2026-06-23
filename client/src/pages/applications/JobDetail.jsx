@@ -242,7 +242,7 @@ const JobDetail = () => {
         <div className="card">
           <h2 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px' }}>Job description</h2>
           <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.8',
-            whiteSpace: 'pre-wrap', maxHeight: '600px', overflowY: 'auto' }}>
+            whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
             {job.job_description || 'No job description provided.'}
           </div>
         </div>
