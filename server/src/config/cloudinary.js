@@ -20,15 +20,16 @@ const hasCloudinaryConfig = [
   process.env.CLOUDINARY_API_SECRET
 ].every((value) => value && !cloudinaryPlaceholders.has(value));
 
+// MOVED UP: config must be called before CloudinaryStorage is initialized
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
 let storage;
 
 if (hasCloudinaryConfig) {
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
-  });
-
   storage = new CloudinaryStorage({
     cloudinary,
     params: {
@@ -39,6 +40,12 @@ if (hasCloudinaryConfig) {
     }
   });
 } else {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'Cloudinary must be configured in production. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET.'
+    );
+  }
+
   const uploadDir = path.resolve(__dirname, '../../uploads/resumes');
   fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -54,7 +61,6 @@ const fileFilter = (req, file, cb) => {
   if (file.mimetype !== 'application/pdf') {
     return cb(new Error('Only PDF files are allowed'));
   }
-
   cb(null, true);
 };
 
