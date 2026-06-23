@@ -20,23 +20,27 @@ const hasCloudinaryConfig = [
   process.env.CLOUDINARY_API_SECRET
 ].every((value) => value && !cloudinaryPlaceholders.has(value));
 
-// MOVED UP: config must be called before CloudinaryStorage is initialized
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+// Verify cloudinary is configured correctly
+console.log('Cloudinary config check:', cloudinary.config().cloud_name ? 'OK' : 'FAILED');
+
 let storage;
 
 if (hasCloudinaryConfig) {
   storage = new CloudinaryStorage({
-    cloudinary,
-    params: {
-      folder: 'job-tracker/resumes',
-      resource_type: 'raw',
-      allowed_formats: ['pdf'],
-      public_id: (req, file) => `resume_${req.user.id}_${Date.now()}`
+    cloudinary: cloudinary,
+    params: async (req, file) => {
+      return {
+        folder: 'job-tracker/resumes',
+        resource_type: 'raw',
+        allowed_formats: ['pdf'],
+        public_id: `resume_${req.user.id}_${Date.now()}`
+      };
     }
   });
 } else {
