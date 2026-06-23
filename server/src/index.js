@@ -39,6 +39,15 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: err.message || 'Something went wrong' });
 });
 
+app.get('/debug-env', (req, res) => {
+  res.json({
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME ? 'set' : 'missing',
+    apiKey: process.env.CLOUDINARY_API_KEY ? 'set' : 'missing',
+    apiSecret: process.env.CLOUDINARY_API_SECRET ? 'set' : 'missing',
+    nodeEnv: process.env.NODE_ENV
+  });
+});
+
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
